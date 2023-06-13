@@ -31,6 +31,7 @@ async function run() {
     const usersCollection = client.db('paint-in').collection('users');
     const instractorsCollection = client.db("paint-in").collection("Instractors");
     const classesCollection = client.db("paint-in").collection("Classes");
+    const bookingCollection = client.db("paint-in").collection("Bookings");
 
 
 
@@ -52,24 +53,20 @@ async function run() {
 
     //create User-----
     app.post('/users', async (req, res) => {
-      const { name, email, password } = req.body;
-    
+      const { name, email, photoUrl, userRole } = req.body;
       try {
         // Connect to MongoDB
         // const client = await MongoClient.connect(url);//
         // const db = client.db(dbName);//
-    
         // Check if the user already exists
         const existingUser = await usersCollection.findOne({ email });
         if (existingUser) {
           // client.close();//
           return res.status(409).json({ error: 'User already exists' });
         }
-    
         // Create a new user
-        const newUser = { name, email, password };
+        const newUser = { name, email, photoUrl, userRole };
         await usersCollection.insertOne(newUser);
-    
         // client.close();//
         res.status(201).json(newUser);
       } catch (err) {
@@ -77,6 +74,62 @@ async function run() {
         res.status(500).json({ error: 'Failed to create user' });
       }
     });
+
+
+    //get user----
+    app.get('/users/:id', async (req, res) => {
+      const email = req.params.id;
+      const query = { email: email };
+      const cursor = await usersCollection.find(query);
+      const user = await cursor.toArray();
+
+      res.send(user);
+   })
+
+
+
+
+
+
+
+
+   //check is Booked-----
+
+app.get('/isBooked', async (req, res) => {
+  try {
+    const email = req.query.email;
+    const classId = req.query.classId;
+
+    const query = { email: email, classId: classId };
+
+    const booking = await bookingCollection.findOne(query);
+
+    if (booking) {
+      res.json(booking);
+    } else {
+      res.status(404).json({ message: 'Booking not found' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+   
+
+
+
+
+ app.post('/booking', async (req, res) => {
+      // const email = req.params.id;
+      // const query = { email: email };
+      
+      const bookingInfo = req.body;
+
+      const result = await bookingCollection.insertOne(bookingInfo);
+
+      res.send(result);
+    })
     
 
 
