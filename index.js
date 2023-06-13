@@ -28,15 +28,62 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const instractorsCollectio = client.db("paint-in").collection("Instractors");
+    const usersCollection = client.db('paint-in').collection('users');
+    const instractorsCollection = client.db("paint-in").collection("Instractors");
+    const classesCollection = client.db("paint-in").collection("Classes");
 
 
 
     // GET Instractors.....
     app.get('/Instractors', async(req, res) => {
-      const result = await instractorsCollectio.find().toArray();
+      const result = await instractorsCollection.find().toArray();
       res.send(result);
+      
     });
+
+    // Get classes........
+    app.get('/classes', async(req, res) => {
+      const result = await classesCollection.find().toArray();
+      res.send(result);
+      
+    });
+
+
+
+    //create User-----
+    app.post('/users', async (req, res) => {
+      const { name, email, password } = req.body;
+    
+      try {
+        // Connect to MongoDB
+        // const client = await MongoClient.connect(url);//
+        // const db = client.db(dbName);//
+    
+        // Check if the user already exists
+        const existingUser = await usersCollection.findOne({ email });
+        if (existingUser) {
+          // client.close();//
+          return res.status(409).json({ error: 'User already exists' });
+        }
+    
+        // Create a new user
+        const newUser = { name, email, password };
+        await usersCollection.insertOne(newUser);
+    
+        // client.close();//
+        res.status(201).json(newUser);
+      } catch (err) {
+        console.error('Failed to create user:', err);
+        res.status(500).json({ error: 'Failed to create user' });
+      }
+    });
+    
+
+
+
+
+
+
 
 
 
@@ -67,6 +114,77 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+
+
+
+
+[
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    },
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    },
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    },
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    },
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    },
+    {
+      "title": "Pastel Painting",
+      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+      "price": 45,
+      "instructorName": "Paplo picaso",
+      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "ratings": "4.5",
+      "availableSeats":22,
+      "enrolledStudentt":78,
+    }
+    
+  ]
+
+
 
 
 
