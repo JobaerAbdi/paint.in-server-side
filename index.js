@@ -138,14 +138,6 @@ app.get('/isBooked', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
     app.post('/enroll', async (req, res) => {
       // const email = req.params.id;
       // const query = { email: email };
@@ -158,10 +150,35 @@ app.get('/isBooked', async (req, res) => {
     })
 
 
+    app.get('/enroll/:id', async(req, res) => {
+
+      const email = req.params.id;
+     const query = { email: email };
+
+     const result = await enrollCollection.find(query).toArray();
+     res.send(result);
+     
+   });
 
 
 
 
+
+
+
+
+
+
+   app.post('/addclass', async (req, res) => {
+    // const email = req.params.id;
+    // const query = { email: email };
+    
+    const classInfo = req.body;
+
+    const result = await classesCollection.insertOne(classInfo);
+
+    res.send(result);
+  })
 
 
 
