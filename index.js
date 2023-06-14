@@ -32,6 +32,7 @@ async function run() {
     const instractorsCollection = client.db("paint-in").collection("Instractors");
     const classesCollection = client.db("paint-in").collection("Classes");
     const bookingCollection = client.db("paint-in").collection("Bookings");
+    const enrollCollection = client.db("paint-in").collection("enroll");
 
 
 
@@ -125,8 +126,6 @@ app.get('/isBooked', async (req, res) => {
     })
 
 
-
-
     app.get('/booking/:id', async(req, res) => {
 
        const email = req.params.id;
@@ -136,6 +135,31 @@ app.get('/isBooked', async (req, res) => {
       res.send(result);
       
     });
+
+
+
+
+
+
+
+
+
+
+
+    app.post('/enroll', async (req, res) => {
+      // const email = req.params.id;
+      // const query = { email: email };
+      
+      const enrollInfo = req.body;
+
+      const result = await enrollCollection.insertOne(enrollInfo);
+
+      res.send(result);
+    })
+
+
+
+
 
 
 
