@@ -11,7 +11,7 @@ app.use(express.json());
 
 
 // mongodb setup...........
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ihuwgkj.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -33,21 +33,22 @@ async function run() {
     const classesCollection = client.db("paint-in").collection("Classes");
     const bookingCollection = client.db("paint-in").collection("Bookings");
     const enrollCollection = client.db("paint-in").collection("enroll");
+    const PendingClassCollection = client.db("paint-in").collection("PendingClass");
 
 
 
     // GET Instractors.....
-    app.get('/Instractors', async(req, res) => {
+    app.get('/Instractors', async (req, res) => {
       const result = await instractorsCollection.find().toArray();
       res.send(result);
-      
+
     });
 
     // Get classes........
-    app.get('/classes', async(req, res) => {
+    app.get('/classes', async (req, res) => {
       const result = await classesCollection.find().toArray();
       res.send(result);
-      
+
     });
 
 
@@ -85,39 +86,39 @@ async function run() {
       const user = await cursor.toArray();
 
       res.send(user);
-   })
+    })
 
 
 
-   //check is Booked-----
+    //check is Booked-----
 
-app.get('/isBooked', async (req, res) => {
-  try {
-    const email = req.query.email;
-    const classId = req.query.classId;
+    app.get('/isBooked', async (req, res) => {
+      try {
+        const email = req.query.email;
+        const classId = req.query.classId;
 
-    const query = { email: email, classId: classId };
+        const query = { email: email, classId: classId };
 
-    const booking = await bookingCollection.findOne(query);
+        const booking = await bookingCollection.findOne(query);
 
-    if (booking) {
-      res.json(booking);
-    } else {
-      res.status(404).json({ message: 'Booking not found' });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-   
+        if (booking) {
+          res.json(booking);
+        } else {
+          res.status(404).json({ message: 'Booking not found' });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
 
 
- app.post('/booking', async (req, res) => {
+
+
+    app.post('/booking', async (req, res) => {
       // const email = req.params.id;
       // const query = { email: email };
-      
+
       const bookingInfo = req.body;
 
       const result = await bookingCollection.insertOne(bookingInfo);
@@ -126,14 +127,14 @@ app.get('/isBooked', async (req, res) => {
     })
 
 
-    app.get('/booking/:id', async(req, res) => {
+    app.get('/booking/:id', async (req, res) => {
 
-       const email = req.params.id;
+      const email = req.params.id;
       const query = { email: email };
 
       const result = await bookingCollection.find(query).toArray();
       res.send(result);
-      
+
     });
 
 
@@ -141,7 +142,7 @@ app.get('/isBooked', async (req, res) => {
     app.post('/enroll', async (req, res) => {
       // const email = req.params.id;
       // const query = { email: email };
-      
+
       const enrollInfo = req.body;
 
       const result = await enrollCollection.insertOne(enrollInfo);
@@ -150,27 +151,91 @@ app.get('/isBooked', async (req, res) => {
     })
 
 
-    app.get('/enroll/:id', async(req, res) => {
+    app.get('/enroll/:id', async (req, res) => {
 
       const email = req.params.id;
-     const query = { email: email };
+      const query = { email: email };
 
-     const result = await enrollCollection.find(query).toArray();
-     res.send(result);
-     
-   });
+      const result = await enrollCollection.find(query).toArray();
+      res.send(result);
+
+    });
 
 
 
-   app.post('/addclass', async (req, res) => {
-    // const email = req.params.id;
-    // const query = { email: email };
-    
-    const classInfo = req.body;
+    app.post('/addclass', async (req, res) => {
+      // const email = req.params.id;
+      // const query = { email: email };
 
-    const result = await classesCollection.insertOne(classInfo);
+      const classInfo = req.body;
 
-    res.send(result);
+      const result = await PendingClassCollection.insertOne(classInfo);
+
+      res.send(result);
+    })
+
+
+
+    app.get('/class/:id', async (req, res) => {
+
+      const instructorEmail = req.params.id;
+      const query = { instructorEmail: instructorEmail };
+
+      const result = await classesCollection.find(query).toArray();
+      res.send(result);
+
+    });
+
+
+
+    // Get pending classes........
+    app.get('/pendingClass', async (req, res) => {
+      const result = await PendingClassCollection.find().toArray();
+      res.send(result);
+
+    });
+
+
+
+
+
+    app.post('/approveClass', async (req, res) => {
+      // const email = req.params.id;
+      // const query = { email: email };
+
+      const classInfo = req.body;
+
+      const result = await classesCollection.insertOne(classInfo);
+
+      res.send(result);
+    })
+
+
+
+    // app.delete('/class/:id', async (req, res) => {
+    //   const classId = req.params.id;
+
+    //   console.log(classId)
+
+    //   try {
+    //     const result = await PendingClassCollection.deleteOne({ _id: ObjectId(classId) });
+    //     if (result.deletedCount === 0) {
+    //       res.status(404).send('Class not found');
+    //     } else {
+    //       res.send('Class deleted successfully');
+    //     }
+    //   } catch (error) {
+    //     res.status(500).send(error.message);
+    //   }
+    // });
+
+
+
+    app.delete('/class/:id', async (req, res) => {
+      const classId = req.params.id;
+      const query = { _id: new ObjectId(classId) };
+      const result = await PendingClassCollection.deleteOne(query);
+      res.send(result);
   })
 
 
@@ -180,20 +245,6 @@ app.get('/isBooked', async (req, res) => {
 
 
 
-
-
-
-
-
-  app.get('/class/:id', async(req, res) => {
-
-    const instructorEmail = req.params.id;
-   const query = { instructorEmail: instructorEmail };
-
-   const result = await classesCollection.find(query).toArray();
-   res.send(result);
-   
- });
 
 
 
@@ -234,68 +285,68 @@ app.listen(port, () => {
 
 
 [
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    },
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    },
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    },
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    },
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    },
-    {
-      "title": "Pastel Painting",
-      "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-      "price": 45,
-      "instructorName": "Paplo picaso",
-      "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "ratings": "4.5",
-      "availableSeats":22,
-      "enrolledStudentt":78,
-    }
-    
-  ]
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  },
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  },
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  },
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  },
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  },
+  {
+    "title": "Pastel Painting",
+    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
+    "price": 45,
+    "instructorName": "Paplo picaso",
+    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "ratings": "4.5",
+    "availableSeats": 22,
+    "enrolledStudentt": 78,
+  }
+
+]
 
 
 
