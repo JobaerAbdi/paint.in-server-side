@@ -162,13 +162,6 @@ app.get('/isBooked', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
    app.post('/addclass', async (req, res) => {
     // const email = req.params.id;
     // const query = { email: email };
@@ -180,6 +173,27 @@ app.get('/isBooked', async (req, res) => {
     res.send(result);
   })
 
+
+
+
+
+
+
+
+
+
+
+
+
+  app.get('/class/:id', async(req, res) => {
+
+    const instructorEmail = req.params.id;
+   const query = { instructorEmail: instructorEmail };
+
+   const result = await classesCollection.find(query).toArray();
+   res.send(result);
+   
+ });
 
 
 
