@@ -88,11 +88,6 @@ async function run() {
 
 
 
-
-
-
-
-
    //check is Booked-----
 
 app.get('/isBooked', async (req, res) => {
@@ -118,8 +113,6 @@ app.get('/isBooked', async (req, res) => {
    
 
 
-
-
  app.post('/booking', async (req, res) => {
       // const email = req.params.id;
       // const query = { email: email };
@@ -130,7 +123,19 @@ app.get('/isBooked', async (req, res) => {
 
       res.send(result);
     })
-    
+
+
+
+
+    app.get('/booking/:id', async(req, res) => {
+
+       const email = req.params.id;
+      const query = { email: email };
+
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+      
+    });
 
 
 
