@@ -48,7 +48,6 @@ async function run() {
     app.get('/classes', async (req, res) => {
       const result = await classesCollection.find().toArray();
       res.send(result);
-
     });
 
 
@@ -78,7 +77,16 @@ async function run() {
     });
 
 
-    //get user----
+
+    //Get all users---
+       // Get classes........
+       app.get('/users', async (req, res) => {
+        const result = await usersCollection.find().toArray();
+        res.send(result);
+      });
+
+
+    //get one user----
     app.get('/users/:id', async (req, res) => {
       const email = req.params.id;
       const query = { email: email };
@@ -87,6 +95,43 @@ async function run() {
 
       res.send(user);
     })
+
+
+
+
+
+
+
+
+
+
+
+app.put('/users/:id', async (req, res) => {
+  const email = req.params.id;
+  const updatedUserRole = req.body.userRole;
+  
+  try {
+    // Create the update query
+    const query = { email: email };
+    const update = { $set: { userRole: updatedUserRole } };
+    
+    // Update the user document
+    const result = await usersCollection.updateOne(query, update);
+    
+    
+    res.send(result);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred');
+  }
+});
+
+
+
+
+
+
+
 
 
 
@@ -286,7 +331,7 @@ app.listen(port, () => {
     "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
     "ratings": "4.5",
     "availableSeats": 22,
-    "enrolledStudentt": 78,
+    "enrolledStudentt": 78
   },
   {
     "title": "Pastel Painting",
@@ -296,7 +341,7 @@ app.listen(port, () => {
     "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
     "ratings": "4.5",
     "availableSeats": 22,
-    "enrolledStudentt": 78,
+    "enrolledStudentt": 78
   },
   {
     "title": "Pastel Painting",
@@ -306,37 +351,7 @@ app.listen(port, () => {
     "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
     "ratings": "4.5",
     "availableSeats": 22,
-    "enrolledStudentt": 78,
-  },
-  {
-    "title": "Pastel Painting",
-    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-    "price": 45,
-    "instructorName": "Paplo picaso",
-    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "ratings": "4.5",
-    "availableSeats": 22,
-    "enrolledStudentt": 78,
-  },
-  {
-    "title": "Pastel Painting",
-    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-    "price": 45,
-    "instructorName": "Paplo picaso",
-    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "ratings": "4.5",
-    "availableSeats": 22,
-    "enrolledStudentt": 78,
-  },
-  {
-    "title": "Pastel Painting",
-    "image": "https://i.ibb.co/f1y1608/spring-painting-wallpaper-1280x800.jpg",
-    "price": 45,
-    "instructorName": "Paplo picaso",
-    "instructorPhoto": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "ratings": "4.5",
-    "availableSeats": 22,
-    "enrolledStudentt": 78,
+    "enrolledStudentt": 78
   }
 
 ]
