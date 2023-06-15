@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const usersCollection = client.db('paint-in').collection('users');
     const instractorsCollection = client.db("paint-in").collection("Instractors");
@@ -139,6 +139,15 @@ async function run() {
 
 
 
+    app.delete('/booking/:id', async (req, res) => {
+      const classId = req.params.id;
+      const query = { _id: new ObjectId(classId) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+  })
+
+
+
     app.post('/enroll', async (req, res) => {
       // const email = req.params.id;
       // const query = { email: email };
@@ -212,22 +221,6 @@ async function run() {
 
 
 
-    // app.delete('/class/:id', async (req, res) => {
-    //   const classId = req.params.id;
-
-    //   console.log(classId)
-
-    //   try {
-    //     const result = await PendingClassCollection.deleteOne({ _id: ObjectId(classId) });
-    //     if (result.deletedCount === 0) {
-    //       res.status(404).send('Class not found');
-    //     } else {
-    //       res.send('Class deleted successfully');
-    //     }
-    //   } catch (error) {
-    //     res.status(500).send(error.message);
-    //   }
-    // });
 
 
 
