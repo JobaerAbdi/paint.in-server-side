@@ -46,7 +46,8 @@ async function run() {
 
     // Get classes........
     app.get('/classes', async (req, res) => {
-      const result = await classesCollection.find().toArray();
+      const sort = { postingDate: -1 };
+      const result = await classesCollection.find().sort(sort).toArray();
       res.send(result);
     });
 
@@ -235,7 +236,7 @@ app.put('/users/:id', async (req, res) => {
       const instructorEmail = req.params.id;
       const query = { instructorEmail: instructorEmail };
 
-      const result = await classesCollection.find(query).toArray();
+      const result = await PendingClassCollection.find(query).toArray();
       res.send(result);
 
     });
